@@ -1,5 +1,10 @@
 /* Holtz Flooring — site behaviour */
 
+function setFooterYear() {
+  const fy = document.getElementById("footer-year");
+  if (fy) fy.textContent = String(new Date().getFullYear());
+}
+
 /* ——— loadIncludes ——— */
 async function loadIncludes() {
   const headerPh = document.getElementById("header-placeholder");
@@ -21,8 +26,7 @@ async function loadIncludes() {
     console.error("Could not load header/footer includes.", e);
   }
 
-  const fy = document.getElementById("footer-year");
-  if (fy) fy.textContent = String(new Date().getFullYear());
+  setFooterYear();
 
   initNav();
   setActiveNavLink();
@@ -143,12 +147,12 @@ function initScrollAnimations() {
 /* ——— initCounters ——— */
 function animateCounter(el) {
   const raw = el.dataset.target;
-  const target = parseFloat(raw);
+  const target = parseFloat(String(raw).trim());
   const suffix = el.dataset.suffix || "";
   const decimals = parseInt(el.dataset.decimals, 10) || 0;
 
-  if (raw === undefined || raw === "" || Number.isNaN(target) || target === 0) {
-    el.textContent = (raw !== undefined && raw !== "" ? raw : "0") + suffix;
+  if (raw === undefined || raw === "" || Number.isNaN(target)) {
+    el.textContent = (raw !== undefined && raw !== "" ? String(raw) : "0") + suffix;
     return;
   }
 
@@ -159,9 +163,9 @@ function animateCounter(el) {
     const progress = Math.min((now - start) / duration, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
     const val = target * eased;
-    el.textContent =
-      (decimals > 0 ? val.toFixed(decimals) : Math.floor(val).toString()) +
-      (progress === 1 ? suffix : "");
+    const num =
+      decimals > 0 ? val.toFixed(decimals) : Math.floor(val).toString();
+    el.textContent = num + suffix;
     if (progress < 1) requestAnimationFrame(update);
   }
 
@@ -169,10 +173,11 @@ function animateCounter(el) {
 }
 
 function initCounters() {
-  const bar = document.querySelector(".stats-bar");
-  if (!bar) return;
+  const section = document.querySelector(".stats-section");
+  if (!section) return;
 
-  const numbers = bar.querySelectorAll(".stat-number");
+  const numbers = section.querySelectorAll(".stat-number");
+  if (!numbers.length) return;
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     numbers.forEach((el) => {
@@ -181,18 +186,25 @@ function initCounters() {
     return;
   }
 
+  let started = false;
+  const run = () => {
+    if (started) return;
+    started = true;
+    numbers.forEach((el) => animateCounter(el));
+  };
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         observer.unobserve(entry.target);
-        numbers.forEach((el) => animateCounter(el));
+        run();
       });
     },
-    { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
+    { threshold: [0, 0.05, 0.1, 0.2], rootMargin: "60px 0px 80px 0px" }
   );
 
-  observer.observe(bar);
+  observer.observe(section);
 }
 
 /* ——— initCallBar ——— */
@@ -294,12 +306,20 @@ function initFaq() {
 
 /* ——— DOMContentLoaded ——— */
 document.addEventListener("DOMContentLoaded", () => {
+  setFooterYear();
+
   loadIncludes().then(() => {
     initSmoothScroll();
+    setFooterYear();
   });
 
   initScrollAnimations();
-  initCounters();
+  /* Double rAF so layout/intersection rects are stable before observing */
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      initCounters();
+    });
+  });
   initCallBar();
   initContactForm();
   initFaq();
