@@ -1,0 +1,296 @@
+/* Holtz Flooring — site behaviour */
+
+/* ——— loadIncludes ——— */
+async function loadIncludes() {
+  const headerPh = document.getElementById("header-placeholder");
+  const footerPh = document.getElementById("footer-placeholder");
+  if (!headerPh || !footerPh) return;
+
+  try {
+    const [headerRes, footerRes] = await Promise.all([
+      fetch("includes/header.html"),
+      fetch("includes/footer.html"),
+    ]);
+    if (headerRes.ok) {
+      headerPh.innerHTML = await headerRes.text();
+    }
+    if (footerRes.ok) {
+      footerPh.innerHTML = await footerRes.text();
+    }
+  } catch (e) {
+    console.error("Could not load header/footer includes.", e);
+  }
+
+  const fy = document.getElementById("footer-year");
+  if (fy) fy.textContent = String(new Date().getFullYear());
+
+  initNav();
+  setActiveNavLink();
+}
+
+/* ——— initNav ——— */
+function initNav() {
+  const header = document.querySelector(".header");
+  const toggle = document.querySelector(".nav-toggle");
+  const drawer = document.querySelector(".drawer");
+  const overlay = document.querySelector(".drawer-overlay");
+
+  if (toggle && drawer && overlay) {
+    const openDrawer = () => {
+      toggle.setAttribute("aria-expanded", "true");
+      drawer.classList.add("is-open");
+      overlay.classList.add("is-open");
+      document.body.style.overflow = "hidden";
+    };
+
+    const closeDrawer = () => {
+      toggle.setAttribute("aria-expanded", "false");
+      drawer.classList.remove("is-open");
+      overlay.classList.remove("is-open");
+      document.body.style.overflow = "";
+    };
+
+    toggle.addEventListener("click", () => {
+      if (drawer.classList.contains("is-open")) {
+        closeDrawer();
+      } else {
+        openDrawer();
+      }
+    });
+
+    overlay.addEventListener("click", closeDrawer);
+
+    drawer.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", closeDrawer);
+    });
+  }
+
+  if (!header) return;
+
+  let ticking = false;
+  const onScroll = () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        header.classList.toggle("header--scrolled", window.scrollY > 40);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  };
+
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+}
+
+/* ——— setActiveNavLink ——— */
+function setActiveNavLink() {
+  const path = window.location.pathname;
+  let file = path.split("/").pop();
+  if (!file || file === "") file = "index.html";
+
+  const normalized = file.toLowerCase();
+
+  document.querySelectorAll(".nav__link, .drawer__link").forEach((link) => {
+    const href = link.getAttribute("href");
+    if (!href || href.startsWith("tel:") || href.startsWith("mailto:")) return;
+    const linkFile = href.split("/").pop().toLowerCase();
+    link.classList.toggle("is-active", linkFile === normalized);
+  });
+}
+
+/* ——— initSmoothScroll ——— */
+function initSmoothScroll() {
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    const id = anchor.getAttribute("href");
+    if (!id || id === "#") return;
+
+    anchor.addEventListener("click", (e) => {
+      const target = document.querySelector(id);
+      if (!target) return;
+      e.preventDefault();
+      const headerH = document.querySelector(".header")?.offsetHeight || 80;
+      const top = target.getBoundingClientRect().top + window.scrollY - headerH - 8;
+      window.scrollTo({ top, behavior: "smooth" });
+    });
+  });
+}
+
+/* ——— initScrollAnimations ——— */
+function initScrollAnimations() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.12 }
+  );
+
+  document.querySelectorAll(".animate-on-scroll").forEach((el) => observer.observe(el));
+
+  document.querySelectorAll(".animate-stagger").forEach((group) => {
+    Array.from(group.children).forEach((child, i) => {
+      child.style.transitionDelay = `${i * 80}ms`;
+      observer.observe(child);
+    });
+  });
+}
+
+/* ——— initCounters ——— */
+function initCounters() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.querySelectorAll(".stat-number").forEach((el) => {
+      el.textContent = (el.dataset.target || "0") + (el.dataset.suffix || "");
+    });
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        const el = entry.target;
+        const target = parseFloat(el.dataset.target);
+        const suffix = el.dataset.suffix || "";
+        const decimals = parseInt(el.dataset.decimals, 10) || 0;
+        const duration = 1800;
+        const start = performance.now();
+
+        function update(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const val = target * eased;
+          el.textContent =
+            (decimals > 0 ? val.toFixed(decimals) : Math.floor(val).toString()) +
+            (progress === 1 ? suffix : "");
+          if (progress < 1) requestAnimationFrame(update);
+        }
+
+        requestAnimationFrame(update);
+      });
+    },
+    { threshold: 0.5 }
+  );
+
+  document.querySelectorAll(".stat-number").forEach((el) => observer.observe(el));
+}
+
+/* ——— initCallBar ——— */
+function initCallBar() {
+  const bar = document.querySelector(".call-bar");
+  if (!bar) return;
+
+  const storageKey = "holtzCallBarDismissed";
+  if (sessionStorage.getItem(storageKey) === "1") {
+    return;
+  }
+
+  window.setTimeout(() => {
+    bar.classList.add("is-visible");
+    document.body.classList.add("has-call-bar");
+  }, 2000);
+
+  const dismiss = bar.querySelector(".call-bar__dismiss");
+  dismiss?.addEventListener("click", () => {
+    bar.classList.remove("is-visible");
+    document.body.classList.remove("has-call-bar");
+    sessionStorage.setItem(storageKey, "1");
+  });
+}
+
+/* ——— getFirstTelDisplay ——— */
+function getFirstTelDisplay() {
+  const tel = document.querySelector('a[href^="tel:"]');
+  return tel ? tel.textContent.replace(/\s+/g, " ").trim() : "";
+}
+
+/* ——— initContactForm ——— */
+function initContactForm() {
+  const form = document.getElementById("contactForm");
+  if (!form) return;
+
+  const successEl = document.getElementById("contactFormSuccess");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    let valid = true;
+    const fields = [
+      { id: "contactName", group: "groupName" },
+      { id: "contactCompany", group: "groupCompany" },
+      { id: "contactEmail", group: "groupEmail", type: "email" },
+      { id: "contactPhone", group: "groupPhone" },
+      { id: "contactLocation", group: "groupLocation" },
+      { id: "contactFlooring", group: "groupFlooring", isSelect: true },
+      { id: "contactDescription", group: "groupDescription" },
+    ];
+
+    fields.forEach(({ id, group, type, isSelect }) => {
+      const input = document.getElementById(id);
+      const wrap = document.getElementById(group);
+      if (!input || !wrap) return;
+
+      wrap.classList.remove("is-invalid");
+      let ok = true;
+      const v = (input.value || "").trim();
+
+      if (!v) ok = false;
+      if (type === "email" && v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
+        ok = false;
+        const err = wrap.querySelector(".form-error");
+        if (err) err.textContent = "Enter a valid email address.";
+      }
+      if (isSelect && (!input.value || input.value === "")) ok = false;
+
+      if (!ok) {
+        valid = false;
+        wrap.classList.add("is-invalid");
+      }
+    });
+
+    const role = document.getElementById("contactRole");
+    const roleGroup = document.getElementById("groupRole");
+    if (role && roleGroup) {
+      roleGroup.classList.remove("is-invalid");
+      if (!role.value) {
+        valid = false;
+        roleGroup.classList.add("is-invalid");
+      }
+    }
+
+    if (!valid) return;
+
+    form.style.display = "none";
+    if (successEl) {
+      const phoneText = getFirstTelDisplay() || "our listed number";
+      successEl.innerHTML =
+        "Thank you — we will be in touch within one business day. For urgent project enquiries call us directly on <strong>" +
+        phoneText +
+        "</strong>.";
+      successEl.classList.add("is-visible");
+    }
+  });
+}
+
+/* ——— initFaq ——— */
+function initFaq() {
+  /* Smooth open/close handled in CSS via max-height on .faq__answer */
+}
+
+/* ——— DOMContentLoaded ——— */
+document.addEventListener("DOMContentLoaded", () => {
+  loadIncludes().then(() => {
+    initSmoothScroll();
+  });
+
+  initScrollAnimations();
+  initCounters();
+  initCallBar();
+  initContactForm();
+  initFaq();
+});
