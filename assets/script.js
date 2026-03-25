@@ -67,6 +67,36 @@ function initNav() {
     drawer.querySelectorAll("a").forEach((link) => {
       link.addEventListener("click", closeDrawer);
     });
+
+    // Mobile accordion
+    const accordionToggle = drawer.querySelector(".drawer__accordion-toggle");
+    const accordionBody = drawer.querySelector(".drawer__accordion-body");
+    if (accordionToggle && accordionBody) {
+      accordionToggle.addEventListener("click", () => {
+        const isOpen = accordionBody.classList.contains("is-open");
+        accordionBody.classList.toggle("is-open", !isOpen);
+        accordionToggle.setAttribute("aria-expanded", String(!isOpen));
+      });
+    }
+  }
+
+  // Desktop dropdown
+  const dropdownToggle = document.querySelector(".nav__dropdown-toggle");
+  const dropdownMenu = document.querySelector(".nav__dropdown-menu");
+  if (dropdownToggle && dropdownMenu) {
+    dropdownToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = dropdownMenu.classList.contains("is-open");
+      dropdownMenu.classList.toggle("is-open", !isOpen);
+      dropdownToggle.setAttribute("aria-expanded", String(!isOpen));
+    });
+
+    document.addEventListener("click", () => {
+      dropdownMenu.classList.remove("is-open");
+      dropdownToggle.setAttribute("aria-expanded", "false");
+    });
+
+    dropdownMenu.addEventListener("click", (e) => e.stopPropagation());
   }
 
   if (!header) return;

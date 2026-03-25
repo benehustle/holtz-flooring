@@ -6,7 +6,20 @@
     <nav class="nav" aria-label="Primary">
       <a href="index.html" class="nav__link">Home</a>
       <a href="about.html" class="nav__link">About</a>
-      <a href="services.html" class="nav__link">Services</a>
+      <div class="nav__dropdown">
+        <button class="nav__link nav__dropdown-toggle" aria-expanded="false" aria-haspopup="true">
+          Services
+          <svg class="nav__dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="nav__dropdown-menu" role="menu">
+          <a href="services.html" class="nav__dropdown-item nav__dropdown-item--all" role="menuitem">All Services</a>
+          <a href="hybrid-flooring-installation.html" class="nav__dropdown-item" role="menuitem">Hybrid Flooring</a>
+          <a href="engineered-timber-installation.html" class="nav__dropdown-item" role="menuitem">Engineered Timber</a>
+          <a href="laminate-flooring-installation.html" class="nav__dropdown-item" role="menuitem">Laminate Flooring</a>
+          <a href="vinyl-plank-installation.html" class="nav__dropdown-item" role="menuitem">Vinyl Plank</a>
+          <a href="floor-preparation-subfloor.html" class="nav__dropdown-item" role="menuitem">Floor Preparation &amp; Subfloor</a>
+        </div>
+      </div>
       <a href="contact.html" class="nav__link">Contact</a>
       <a href="contact.html" class="header__cta btn btn--primary">Submit Enquiry</a>
     </nav>
@@ -22,7 +35,20 @@
   <div class="drawer__nav">
     <a href="index.html" class="drawer__link">Home</a>
     <a href="about.html" class="drawer__link">About</a>
-    <a href="services.html" class="drawer__link">Services</a>
+    <div class="drawer__accordion">
+      <button class="drawer__link drawer__accordion-toggle" aria-expanded="false">
+        Services
+        <svg class="drawer__accordion-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="drawer__accordion-body">
+        <a href="services.html" class="drawer__sub-link drawer__sub-link--all">All Services</a>
+        <a href="hybrid-flooring-installation.html" class="drawer__sub-link">Hybrid Flooring</a>
+        <a href="engineered-timber-installation.html" class="drawer__sub-link">Engineered Timber</a>
+        <a href="laminate-flooring-installation.html" class="drawer__sub-link">Laminate Flooring</a>
+        <a href="vinyl-plank-installation.html" class="drawer__sub-link">Vinyl Plank</a>
+        <a href="floor-preparation-subfloor.html" class="drawer__sub-link">Floor Prep &amp; Subfloor</a>
+      </div>
+    </div>
     <a href="contact.html" class="drawer__link">Contact</a>
     <a href="contact.html" class="drawer__cta">Submit Enquiry</a>
   </div>
