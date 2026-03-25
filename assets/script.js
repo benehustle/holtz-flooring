@@ -141,9 +141,41 @@ function initScrollAnimations() {
 }
 
 /* ——— initCounters ——— */
+function animateCounter(el) {
+  const raw = el.dataset.target;
+  const target = parseFloat(raw);
+  const suffix = el.dataset.suffix || "";
+  const decimals = parseInt(el.dataset.decimals, 10) || 0;
+
+  if (raw === undefined || raw === "" || Number.isNaN(target) || target === 0) {
+    el.textContent = (raw !== undefined && raw !== "" ? raw : "0") + suffix;
+    return;
+  }
+
+  const duration = 1800;
+  const start = performance.now();
+
+  function update(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const val = target * eased;
+    el.textContent =
+      (decimals > 0 ? val.toFixed(decimals) : Math.floor(val).toString()) +
+      (progress === 1 ? suffix : "");
+    if (progress < 1) requestAnimationFrame(update);
+  }
+
+  requestAnimationFrame(update);
+}
+
 function initCounters() {
+  const bar = document.querySelector(".stats-bar");
+  if (!bar) return;
+
+  const numbers = bar.querySelectorAll(".stat-number");
+
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    document.querySelectorAll(".stat-number").forEach((el) => {
+    numbers.forEach((el) => {
       el.textContent = (el.dataset.target || "0") + (el.dataset.suffix || "");
     });
     return;
@@ -154,36 +186,23 @@ function initCounters() {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         observer.unobserve(entry.target);
-        const el = entry.target;
-        const target = parseFloat(el.dataset.target);
-        const suffix = el.dataset.suffix || "";
-        const decimals = parseInt(el.dataset.decimals, 10) || 0;
-        const duration = 1800;
-        const start = performance.now();
-
-        function update(now) {
-          const progress = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          const val = target * eased;
-          el.textContent =
-            (decimals > 0 ? val.toFixed(decimals) : Math.floor(val).toString()) +
-            (progress === 1 ? suffix : "");
-          if (progress < 1) requestAnimationFrame(update);
-        }
-
-        requestAnimationFrame(update);
+        numbers.forEach((el) => animateCounter(el));
       });
     },
-    { threshold: 0.5 }
+    { threshold: 0.15, rootMargin: "0px 0px -10% 0px" }
   );
 
-  document.querySelectorAll(".stat-number").forEach((el) => observer.observe(el));
+  observer.observe(bar);
 }
 
 /* ——— initCallBar ——— */
 function initCallBar() {
   const bar = document.querySelector(".call-bar");
   if (!bar) return;
+
+  /* Call bar CSS is display:none !important until phone number is live */
+  const cs = window.getComputedStyle(bar);
+  if (cs.display === "none") return;
 
   const storageKey = "holtzCallBarDismissed";
   if (sessionStorage.getItem(storageKey) === "1") {
@@ -201,12 +220,6 @@ function initCallBar() {
     document.body.classList.remove("has-call-bar");
     sessionStorage.setItem(storageKey, "1");
   });
-}
-
-/* ——— getFirstTelDisplay ——— */
-function getFirstTelDisplay() {
-  const tel = document.querySelector('a[href^="tel:"]');
-  return tel ? tel.textContent.replace(/\s+/g, " ").trim() : "";
 }
 
 /* ——— initContactForm ——— */
@@ -267,11 +280,8 @@ function initContactForm() {
 
     form.style.display = "none";
     if (successEl) {
-      const phoneText = getFirstTelDisplay() || "our listed number";
       successEl.innerHTML =
-        "Thank you — we will be in touch within one business day. For urgent project enquiries call us directly on <strong>" +
-        phoneText +
-        "</strong>.";
+        "Thank you — we will be in touch within one business day. For urgent project enquiries, include your phone number in the form or contact us again via this page.";
       successEl.classList.add("is-visible");
     }
   });
