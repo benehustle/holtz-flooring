@@ -6,15 +6,15 @@
   --color-primary-light:   #2D2D4E;
   --color-primary-dark:    #0D0D1A;
   --color-primary-dark-rgb: 13, 13, 26;
-  --color-secondary:       #C8A96E;
-  --color-secondary-rgb:   200, 169, 110;
-  --color-secondary-hover: #B8945A;
-  /* Darker gold for filled CTAs — meets WCAG AA with --color-on-gold text */
-  --color-secondary-cta:       #A07840;
-  --color-secondary-cta-hover: #8F6834;
-  --color-on-gold:           #0D0D1A;
-  --color-gradient-gold-end: #E8C98E;
-  --color-secondary-bright: #D4B97E;
+  --color-secondary:       #7b8e7e;
+  --color-secondary-rgb:   123, 142, 126;
+  --color-secondary-hover: #6a7d71;
+  /* Darker accent for filled CTAs — WCAG AA with white text */
+  --color-secondary-cta:       #5d6e62;
+  --color-secondary-cta-hover: #4f5e54;
+  --color-on-gold:           #ffffff;
+  --color-gradient-gold-end: #a8b8ae;
+  --color-secondary-bright: #95a699;
   --color-white:           #ffffff;
   --color-gray-50:         #f8fafc;
   --color-gray-100:        #f1f5f9;
@@ -149,7 +149,7 @@ img {
   padding: 0 var(--container-padding);
 }
 
-/* Gradient text — client override: gold */
+/* Gradient text — brand accent */
 .gradient-text {
   background: linear-gradient(135deg, var(--color-secondary), var(--color-gradient-gold-end));
   -webkit-background-clip: text;
@@ -202,9 +202,9 @@ img {
 
 .logo__img {
   display: block;
-  height: 40px;
+  height: 52px;
   width: auto;
-  max-width: min(52vw, 220px);
+  max-width: min(58vw, 280px);
   object-fit: contain;
   object-position: left center;
 }
@@ -221,8 +221,8 @@ img {
 
 @media (max-width: 1023px) {
   .logo__img {
-    height: 34px;
-    max-width: min(48vw, 200px);
+    height: 44px;
+    max-width: min(52vw, 240px);
   }
 }
 
@@ -543,45 +543,65 @@ img {
 }
 
 .hero--page {
-  min-height: 45vh;
+  min-height: min(560px, 58vh);
   padding-top: 80px;
 }
 
 .hero__bg {
   position: absolute;
   inset: 0;
-  background-image: url("https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?w=1600&q=80&fit=crop");
+  background-image: url("../public/home-hero.png");
   background-size: cover;
-  background-position: center;
+  background-position: center center;
+  background-repeat: no-repeat;
   background-attachment: fixed;
 }
 
+/* Rotate customer photography by hero variant (all files in /public) */
 .hero__bg--pos-north {
-  background-position: center 20%;
+  background-image: url("../public/home-hero%20(3).png");
+  background-position: center 35%;
 }
 
 .hero__bg--pos-east {
-  background-position: 70% center;
+  background-image: url("../public/home-hero%20(2).png");
+  background-position: 55% center;
 }
 
 .hero__bg--pos-south {
-  background-position: center 75%;
+  background-image: url("../public/home-hero%20(3).png");
+  background-position: center 60%;
 }
 
 .hero__bg--pos-west {
-  background-position: 25% center;
+  background-image: url("../public/home-hero%20(2).png");
+  background-position: 35% center;
 }
 
 .hero__bg--pos-tl {
-  background-position: 20% 30%;
+  background-image: url("../public/home-hero%20(4).png");
+  background-position: 45% 40%;
 }
 
 .hero__bg--pos-br {
-  background-position: 80% 65%;
+  background-image: url("../public/home-hero%20(4).png");
+  background-position: 60% 55%;
 }
 
 .hero__bg--pos-center-soft {
-  background-position: 50% 45%;
+  background-image: url("../public/home-hero.png");
+  background-position: 50% 42%;
+}
+
+/* Home: favour vertical framing so headline + photography both read */
+.hero--home .hero__bg {
+  background-position: 52% 38%;
+}
+
+@media (max-width: 768px) {
+  .hero--home .hero__bg {
+    background-position: 50% 32%;
+  }
 }
 
 @media (max-width: 768px) {
@@ -611,8 +631,8 @@ img {
 }
 
 .hero--home .hero__inner {
-  padding-top: max(6rem, calc(4.5rem + env(safe-area-inset-top, 0px)));
-  padding-bottom: 0;
+  padding-top: max(7rem, calc(5rem + env(safe-area-inset-top, 0px)));
+  padding-bottom: 2rem;
 }
 
 .hero__content {
@@ -621,12 +641,12 @@ img {
 }
 
 .hero--home .hero__content {
-  padding-bottom: 160px;
+  padding-bottom: clamp(12rem, 24vw, 15rem);
 }
 
 @media (max-width: 640px) {
   .hero--home .hero__content {
-    padding-bottom: clamp(10rem, 28vw, 14rem);
+    padding-bottom: clamp(10.5rem, 28vw, 13rem);
   }
 }
 
@@ -653,7 +673,17 @@ img {
 }
 
 .hero--page .hero__inner {
-  padding: 5rem var(--container-padding) 3rem;
+  padding: 6.25rem var(--container-padding) 4.25rem;
+}
+
+@media (max-width: 768px) {
+  .hero--page .hero__inner {
+    padding: 5.5rem var(--container-padding) 3.5rem;
+  }
+
+  .hero--page {
+    min-height: min(480px, 52vh);
+  }
 }
 
 .hero__badge {
@@ -677,14 +707,14 @@ img {
   color: var(--color-white);
 }
 
-/* Solid brand gold + shadow — readable on photo + navy overlay (all hero variants) */
+/* Solid brand accent + shadow — readable on photo + navy overlay (all hero variants) */
 .hero .hero__headline .gradient-text {
   background: none;
   -webkit-background-clip: unset;
   background-clip: unset;
-  -webkit-text-fill-color: var(--color-secondary);
-  color: var(--color-secondary);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  -webkit-text-fill-color: var(--color-secondary-bright);
+  color: var(--color-secondary-bright);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
 }
 
 .hero__subheadline {
@@ -1037,6 +1067,11 @@ img {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--color-primary);
 }
 
+/* Installation catalogue grids omit icons on home + services hub */
+.services-grid .service-card__icon {
+  display: none;
+}
+
 .service-card__icon {
   width: 52px;
   height: 52px;
@@ -1217,7 +1252,7 @@ img {
 .why-us-card:hover {
   border-color: var(--color-secondary);
   transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(200, 169, 110, 0.12);
+  box-shadow: 0 12px 40px rgba(123, 142, 126, 0.15);
 }
 
 .why-us-card__badge {
@@ -1251,7 +1286,7 @@ img {
 }
 
 .why-us-card:hover .why-us-card__icon {
-  background: rgba(200, 169, 110, 0.2);
+  background: rgba(123, 142, 126, 0.22);
   color: var(--color-primary);
 }
 
@@ -1309,6 +1344,12 @@ img {
 .cta-banner {
   text-align: center;
   padding: 3.5rem var(--container-padding);
+}
+
+.cta-banner .section__intro {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
 }
 
 .cta-banner .btn--primary {
@@ -1405,9 +1446,9 @@ img {
 
 .footer__logo {
   display: block;
-  height: 52px;
+  height: 60px;
   width: auto;
-  max-width: min(100%, 280px);
+  max-width: min(100%, 320px);
   object-fit: contain;
   object-position: left center;
 }
@@ -1418,8 +1459,8 @@ img {
 
 @media (max-width: 640px) {
   .footer__logo {
-    height: 44px;
-    max-width: min(100%, 240px);
+    height: 50px;
+    max-width: min(100%, 280px);
   }
 }
 

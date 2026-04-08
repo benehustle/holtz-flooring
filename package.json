@@ -1,0 +1,12 @@
+{
+  "name": "holtz-flooring-site",
+  "private": true,
+  "description": "Local preview server (required: header/footer are loaded via fetch).",
+  "scripts": {
+    "dev": "serve . -l 3000",
+    "start": "serve . -l 3000"
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
