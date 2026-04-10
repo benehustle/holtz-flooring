@@ -1255,23 +1255,6 @@ img {
   box-shadow: 0 12px 40px rgba(123, 142, 126, 0.15);
 }
 
-.why-us-card__badge {
-  font-family: var(--font-family-heading);
-  font-size: 0.6875rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  color: var(--color-on-gold);
-  background: var(--color-secondary-cta);
-  min-width: 2.5rem;
-  height: 2.5rem;
-  padding: 0 0.35rem;
-  border-radius: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 14px;
-}
-
 .why-us-card__icon {
   width: 48px;
   height: 48px;
@@ -1323,11 +1306,6 @@ img {
 
 .section--primary .why-us-card__body {
   color: var(--color-text-muted-on-dark);
-}
-
-.section--primary .why-us-card__badge {
-  color: var(--color-primary-dark);
-  background: var(--color-secondary-bright);
 }
 
 .section--primary .why-us-card__icon {

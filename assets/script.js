@@ -323,7 +323,7 @@ function initContactForm() {
     form.style.display = "none";
     if (successEl) {
       successEl.innerHTML =
-        "Thank you — we will be in touch within one business day. For urgent project enquiries, include your phone number in the form or contact us again via this page.";
+        "Thank you, we will be in touch within one business day. For urgent project enquiries, include your phone number in the form or contact us again via this page.";
       successEl.classList.add("is-visible");
     }
   });
