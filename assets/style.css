@@ -1674,6 +1674,21 @@ img {
   display: block;
 }
 
+.form-submit-error {
+  display: none;
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  color: var(--color-primary);
+  background: #fff5f5;
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+}
+
+.form-submit-error.is-visible {
+  display: block;
+}
+
 .contact-details {
   padding: 1.5rem;
   background: var(--color-gray-50);

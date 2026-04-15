@@ -57,7 +57,7 @@
         <div class="animate-on-scroll">
           <h2 id="contact-form-heading">Submit a flooring enquiry</h2>
           <p>For installation quotes or to discuss an upcoming project, please fill in the details below and we will come back to you within one business day.</p>
-          <form id="contactForm" novalidate>
+          <form id="contactForm" name="contact" method="POST" data-netlify="true" novalidate>
             <div class="form-group" id="groupName">
               <label for="contactName">Your Name</label>
               <input type="text" id="contactName" name="name" required autocomplete="name">
@@ -114,6 +114,7 @@
             </div>
             <button type="submit" class="btn btn--primary">Submit Enquiry</button>
           </form>
+          <div id="contactFormError" class="form-submit-error" role="alert" aria-live="polite"></div>
           <div id="contactFormSuccess" class="form-success" role="status" aria-live="polite"></div>
         </div>
         <aside class="contact-details animate-on-scroll">

@@ -270,9 +270,20 @@ function initContactForm() {
   if (!form) return;
 
   const successEl = document.getElementById("contactFormSuccess");
+  const errorEl = document.getElementById("contactFormError");
+  const submitBtn = form.querySelector('button[type="submit"]');
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+
+    if (errorEl) {
+      errorEl.textContent = "";
+      errorEl.classList.remove("is-visible");
+    }
+    if (successEl) {
+      successEl.classList.remove("is-visible");
+      successEl.innerHTML = "";
+    }
 
     let valid = true;
     const fields = [
@@ -320,12 +331,33 @@ function initContactForm() {
 
     if (!valid) return;
 
-    form.style.display = "none";
-    if (successEl) {
-      successEl.innerHTML =
-        "Thank you, we will be in touch within one business day. For urgent project enquiries, include your phone number in the form or contact us again via this page.";
-      successEl.classList.add("is-visible");
-    }
+    const formData = new FormData(form);
+    if (submitBtn) submitBtn.disabled = true;
+
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(formData).toString(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Submit failed");
+        form.style.display = "none";
+        if (successEl) {
+          successEl.textContent =
+            "Thank you, we will be in touch within one business day. For urgent project enquiries, include your phone number in the form or contact us again via this page.";
+          successEl.classList.add("is-visible");
+        }
+      })
+      .catch(() => {
+        if (errorEl) {
+          errorEl.textContent =
+            "Something went wrong sending your enquiry. Please try again in a moment, or call us on 03 7503 1533.";
+          errorEl.classList.add("is-visible");
+        }
+      })
+      .finally(() => {
+        if (submitBtn) submitBtn.disabled = false;
+      });
   });
 }
 
